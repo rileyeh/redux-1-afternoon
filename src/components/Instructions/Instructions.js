@@ -1,28 +1,55 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import store, { ADD_INSTRUCTIONS, ADD_RECIPE, CLEAR_INPUTS } from '../../store'
 
 class Instructions extends Component {
   constructor(props) {
     super(props);
+
+    const reduxStore = store.getState()
+
     this.state = {
-      instructions: [],
+      instructions: reduxStore.instructions,
       input: ""
     };
   }
+
+  _isMounted = false;
+
   handleChange(val) {
     this.setState({
       input: val
     });
   }
+
   addInstruction() {
-    // Send data to Redux state
+    store.dispatch({ type: ADD_INSTRUCTIONS, payload: this.state.input })
     this.setState({
       input: ""
     });
   }
+
   create() {
-    // Create new recipe in Redux state
+    store.dispatch({ type: ADD_RECIPE })
+    store.dispatch({ type: CLEAR_INPUTS })
   }
+
+  componentDidMount() {
+    this._isMounted = true
+
+    store.subscribe(() => {
+      let reduxStore = store.getState()
+      if(this._isMounted) {
+      this.setState({
+          instructions: reduxStore.instructions
+      })}
+    })
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false
+  }
+
   render() {
     const instructions = this.state.instructions.map((instruction, i) => {
       return <li key={i}>{instruction}</li>;

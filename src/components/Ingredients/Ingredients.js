@@ -1,25 +1,49 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import store, { ADD_INGREDIENTS } from '../../store'
 
 class Ingredients extends Component {
   constructor(props) {
     super(props);
+
+    const reduxStore = store.getState()
+
     this.state = {
-      ingredients: [],
+      ingredients: reduxStore.ingredients,
       input: ""
     };
   }
+
+  _isMounted = false;
+
   handleChange(val) {
     this.setState({
       input: val
     });
   }
+
   addIngredient() {
-    // Send data to Redux state
+    store.dispatch({ type: ADD_INGREDIENTS, payload: this.state.input})
     this.setState({
       input: ""
     });
   }
+
+  componentDidMount() {
+    this._isMounted = true
+
+    store.subscribe(() => {
+      let reduxStore = store.getState()
+      if (this._isMounted) {this.setState({
+        ingredients: reduxStore.ingredients
+      })}
+    })
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false
+  }
+  
   render() {
     const ingredients = this.state.ingredients.map((ingredient, i) => {
       return <li key={i}>{ingredient}</li>;

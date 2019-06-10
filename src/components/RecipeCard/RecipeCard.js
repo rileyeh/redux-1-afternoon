@@ -1,8 +1,10 @@
 import React from "react";
 import "./RecipeCard.css";
+import store, { DELETE_RECIPE } from '../../store'
 
 let RecipeCard = props => {
   const {
+    index,
     name,
     category,
     authorFirst,
@@ -10,12 +12,19 @@ let RecipeCard = props => {
     ingredients,
     instructions
   } = props;
+
   const ingredientsDisplay = ingredients.map((ingredient, i) => {
     return <li key={i}>{ingredient}</li>;
   });
+
   const instructionsDisplay = instructions.map((instruction, i) => {
     return <li key={i}>{instruction}</li>;
   });
+
+  let deleteRecipe = () => {
+    store.dispatch({ type: DELETE_RECIPE, payload: index })
+  }
+
   return (
     <div className="RecipeCard">
       <div className="title_container">
@@ -35,6 +44,7 @@ let RecipeCard = props => {
       </div>
       <svg
         className="delete"
+        onClick={deleteRecipe}
         width="60"
         height="60"
         viewBox="0 0 60 60"
